@@ -40,6 +40,9 @@ namespace KazmirukEDMS
             });
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddRazorPages();
+            // Application services
+            builder.Services.AddScoped<Services.Interfaces.IDocumentService, Services.DocumentService>();
 
             var app = builder.Build();
 
@@ -70,6 +73,8 @@ namespace KazmirukEDMS
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
+            app.MapRazorPages();
 
             app.Run();
         }

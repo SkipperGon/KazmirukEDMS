@@ -33,3 +33,5 @@ namespace KazmirukEDMS.Models
 
         public string? Comment { get; set; }
     }
+
+}

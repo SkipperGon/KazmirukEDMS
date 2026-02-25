@@ -1,0 +1,40 @@
+@page
+@model KazmirukEDMS.Pages.Documents.IndexModel
+@{
+    ViewData["Title"] = "Documents";
+}
+
+<h1>Documents</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Registration</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var d in Model.Paged.Items)
+    {
+        <tr>
+            <td>@d.Title</td>
+            <td>@d.RegistrationNumber</td>
+            <td>@d.Status</td>
+            <td>@d.CreatedAt.ToLocalTime()</td>
+            <td><a asp-page="Details" asp-route-id="@d.Id">Details</a> | <a asp-page="Edit" asp-route-id="@d.Id">Edit</a> | <a asp-page="Delete" asp-route-id="@d.Id">Delete</a></td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        @for (int i = 1; i <= Math.Ceiling((double)Model.Paged.TotalCount / Model.Paged.PageSize); i++)
+        {
+            <li class="page-item @(i == Model.Paged.Page ? "active" : "")"><a class="page-link" asp-route-page="@i">@i</a></li>
+        }
+    </ul>
+</nav>

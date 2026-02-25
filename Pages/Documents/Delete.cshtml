@@ -1,0 +1,14 @@
+@page "{id:guid}"
+@model KazmirukEDMS.Pages.Documents.DeleteModel
+@{
+    ViewData["Title"] = "Delete document";
+}
+
+<h1>Delete document</h1>
+
+<p>Are you sure you want to delete: <strong>@Model.Document?.Title</strong>?</p>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a asp-page="Index" class="btn btn-secondary">Cancel</a>
+</form>

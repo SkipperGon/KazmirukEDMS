@@ -27,6 +27,19 @@ namespace KazmirukEDMS.Models
 
         public string? CreatedById { get; set; }
 
+        // Audit
+        public DateTime? ModifiedAt { get; set; }
+        public string? ModifiedById { get; set; }
+
+        // Archiving
+        public bool IsArchived { get; set; } = false;
+        public DateTime? ArchivedAt { get; set; }
+        public string? ArchivedById { get; set; }
+
+        // ГОСТ / registry metadata
+        public string? DocumentType { get; set; }
+        public int? StoragePeriodYears { get; set; }
+
         // Navigation
         public ICollection<DocumentVersion> Versions { get; set; } = new List<DocumentVersion>();
 

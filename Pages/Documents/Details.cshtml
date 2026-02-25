@@ -1,0 +1,40 @@
+@page "{id:guid}"
+@model KazmirukEDMS.Pages.Documents.DetailsModel
+@{
+    ViewData["Title"] = "Document details";
+}
+
+<h1>@Model.Document?.Title</h1>
+<p>Registration: @Model.Document?.RegistrationNumber</p>
+<p>Status: @Model.Document?.Status</p>
+
+<h3>Versions</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>File</th>
+            <th>Mime</th>
+            <th>Created</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var v in Model.Versions)
+    {
+        <tr>
+            <td>@v.VersionNumber</td>
+            <td><a href="~/uploads/@v.DocumentId/@System.IO.Path.GetFileName(v.FilePath)">@System.IO.Path.GetFileName(v.FilePath)</a></td>
+            <td>@v.MimeType</td>
+            <td>@v.CreatedAt.ToLocalTime()</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<h3>Upload new version</h3>
+<form method="post" enctype="multipart/form-data">
+    <input type="file" name="Upload" />
+    <button class="btn btn-primary" asp-page-handler="Upload">Upload</button>
+</form>
+
+<p><a asp-page="Index">Back to list</a></p>

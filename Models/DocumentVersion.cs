@@ -27,12 +27,17 @@ namespace KazmirukEDMS.Models
 
         public DateTime? SignedAt { get; set; }
 
+        // Additional GOST-related metadata
+        public string? SigningCertificateSerial { get; set; }
+        public string? SignatureAlgorithm { get; set; }
+
+        // Audit / archival
+        public bool IsArchived { get; set; } = false;
+        public DateTime? ArchivedAt { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public string? CreatedById { get; set; }
-
-        public bool IsArchived { get; set; } = false;
-
         public string? Notes { get; set; }
     }
 }
