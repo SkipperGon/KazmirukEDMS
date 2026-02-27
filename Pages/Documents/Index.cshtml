@@ -1,18 +1,21 @@
 @page
 @model KazmirukEDMS.Pages.Documents.IndexModel
 @{
-    ViewData["Title"] = "Documents";
+    ViewData["Title"] = "Документы";
 }
 
-<h1>Documents</h1>
+<h1>Документы</h1>
+
+<p><a asp-page="Create" class="btn btn-primary">Создать документ</a></p>
 
 <table class="table">
     <thead>
         <tr>
-            <th>Title</th>
-            <th>Registration</th>
-            <th>Status</th>
-            <th>Created</th>
+            <th>Название</th>
+            <th>Рег. номер</th>
+            <th>Статус</th>
+            <th>Создан</th>
+            <th>Создал</th>
             <th></th>
         </tr>
     </thead>
@@ -24,7 +27,8 @@
             <td>@d.RegistrationNumber</td>
             <td>@d.Status</td>
             <td>@d.CreatedAt.ToLocalTime()</td>
-            <td><a asp-page="Details" asp-route-id="@d.Id">Details</a> | <a asp-page="Edit" asp-route-id="@d.Id">Edit</a> | <a asp-page="Delete" asp-route-id="@d.Id">Delete</a></td>
+            <td>@d.CreatedById</td>
+            <td><a asp-page="Details" asp-route-id="@d.Id">Открыть</a> | <a asp-page="Edit" asp-route-id="@d.Id">Изменить</a> | <a asp-page="Delete" asp-route-id="@d.Id">Удалить</a></td>
         </tr>
     }
     </tbody>

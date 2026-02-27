@@ -10,6 +10,8 @@ namespace KazmirukEDMS.Services
     {
         private readonly ApplicationDbContext _db;
 
+        // Сервис работы с документами (CRUD + версии). Использует DbContext напрямую.
+        // В более крупном решении бизнес-логика должна быть разделена на отдельные слои и покрыта тестами.
         public DocumentService(ApplicationDbContext db)
         {
             _db = db;
@@ -51,6 +53,25 @@ namespace KazmirukEDMS.Services
         public async Task<PagedResult<DocumentDto>> GetDocumentsAsync(int page = 1, int pageSize = 50)
         {
             var query = _db.Documents.AsNoTracking().OrderByDescending(d => d.CreatedAt);
+            var total = await query.CountAsync();
+            var list = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+            return new PagedResult<DocumentDto>
+            {
+                Items = list.Select(Map),
+                TotalCount = total,
+                Page = page,
+                PageSize = pageSize
+            };
+        }
+
+        public async Task<PagedResult<DocumentDto>> GetDocumentsForUserAsync(string? userName, bool isAdmin, int page = 1, int pageSize = 50)
+        {
+            var query = _db.Documents.AsNoTracking().OrderByDescending(d => d.CreatedAt);
+            if (!isAdmin && !string.IsNullOrEmpty(userName))
+            {
+                query = query.Where(d => d.CreatedById == userName).OrderByDescending(d => d.CreatedAt);
+            }
+
             var total = await query.CountAsync();
             var list = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             return new PagedResult<DocumentDto>

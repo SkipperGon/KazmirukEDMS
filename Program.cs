@@ -35,14 +35,32 @@ namespace KazmirukEDMS
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SameSite = SameSiteMode.Lax;
                 options.SlidingExpiration = true;
+                // Redirect unauthenticated users to this path
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
                 // Do not persist cookie by default - session cookie (user requested behavior)
                 options.ExpireTimeSpan = TimeSpan.FromHours(8);
             });
 
             builder.Services.AddControllersWithViews();
-            builder.Services.AddRazorPages();
+            // Configure Razor Pages and require authorization for document management pages
+            builder.Services.AddRazorPages(options =>
+            {
+                // Protect the Documents folder: unauthenticated users will be redirected to the login page
+                options.Conventions.AuthorizeFolder("/Documents");
+                // Allow anonymous access to the Account pages (login/logout)
+                options.Conventions.AllowAnonymousToPage("/Account/Login");
+                options.Conventions.AllowAnonymousToPage("/Account/Logout");
+            });
             // Application services
             builder.Services.AddScoped<Services.Interfaces.IDocumentService, Services.DocumentService>();
+            // File storage options and service (local storage)
+            builder.Services.Configure<Services.LocalStorageOptions>(builder.Configuration.GetSection("LocalStorage"));
+            builder.Services.AddSingleton<Services.Interfaces.IFileStorageService, Services.FileStorageService>();
+
+            // Signature service
+            builder.Services.Configure<Services.SignatureOptions>(builder.Configuration.GetSection("Signature"));
+            builder.Services.AddSingleton<Services.Interfaces.ISignatureService, Services.BouncyCastleSignatureService>();
 
             var app = builder.Build();
 

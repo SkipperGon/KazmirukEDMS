@@ -17,7 +17,9 @@ namespace KazmirukEDMS.Pages.Documents
 
         public async Task OnGetAsync(int page = 1)
         {
-            Paged = await _service.GetDocumentsAsync(page, 20);
+            var userName = User?.Identity?.Name;
+            var isAdmin = User?.IsInRole("Administrator") ?? false;
+            Paged = await _service.GetDocumentsForUserAsync(userName, isAdmin, page, 20);
         }
     }
 }

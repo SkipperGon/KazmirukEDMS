@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 
 namespace KazmirukEDMS.Data
 {
+    // ApplicationDbContext - основной контекст EF Core для СЭД.
+    // Наследуется от IdentityDbContext чтобы хранить пользователей и роли вместе с доменными сущностями.
     public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
