@@ -4,41 +4,81 @@
     ViewData["Title"] = "Документы";
 }
 
-<h1>Документы</h1>
+<div class="documents-header d-flex justify-content-between align-items-start">
+    <div>
+        <h1>📁 Документы</h1>
+        <p>@Model.Paged.TotalCount документов в системе</p>
+    </div>
+    <a asp-page="Create" class="btn btn-primary" style="border-radius: 8px; padding: 0.5rem 1.5rem;">
+        <span>➕ Создать документ</span>
+    </a>
+</div>
 
-<p><a asp-page="Create" class="btn btn-primary">Создать документ</a></p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Название</th>
-            <th>Рег. номер</th>
-            <th>Статус</th>
-            <th>Создан</th>
-            <th>Создал</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-    @foreach (var d in Model.Paged.Items)
+@if(Model.Cards.Count == 0)
+{
+    <div class="alert alert-info text-center py-5">
+        <h4>Нет документов</h4>
+        <p>Начните с создания первого документа</p>
+    </div>
+}
+else
+{
+    <div class="document-list">
+    @foreach(var c in Model.Cards)
     {
-        <tr>
-            <td>@d.Title</td>
-            <td>@d.RegistrationNumber</td>
-            <td>@d.Status</td>
-            <td>@d.CreatedAt.ToLocalTime()</td>
-            <td>@d.CreatedById</td>
-            <td><a asp-page="Details" asp-route-id="@d.Id">Открыть</a> | <a asp-page="Edit" asp-route-id="@d.Id">Изменить</a> | <a asp-page="Delete" asp-route-id="@d.Id">Удалить</a></td>
-        </tr>
+        <div class="document-row">
+            <div class="card-inner">
+                <div class="d-flex align-items-center" style="gap:1rem; width:100%">
+                    <div style="flex:0 0 auto">
+                        <img src="@c.IconUrl" alt="icon" class="doc-icon-small" />
+                    </div>
+                    <div class="doc-info" style="flex:1 1 auto; min-width:0">
+                        <h5 class="card-title" title="@c.Title">@c.Title</h5>
+                        <div class="meta-row">
+                            @if(!string.IsNullOrEmpty(c.RegistrationNumber))
+                            {
+                                <span class="meta-item">
+                                    <span class="meta-label">Рег.:</span>
+                                    <span>@c.RegistrationNumber</span>
+                                </span>
+                            }
+                            <span class="meta-item">
+                                <span class="meta-label">Создан:</span>
+                                <span>@c.CreatedAt.ToLocalTime().ToString("d")</span>
+                            </span>
+                        </div>
+                    </div>
+                    <div style="flex:0 0 auto; text-align:right">
+                        <div class="mb-2">
+                            <span class="badge @(c.Status == KazmirukEDMS.Models.DocumentStatus.Approved ? "bg-success" : c.Status == KazmirukEDMS.Models.DocumentStatus.UnderReview ? "bg-warning text-dark" : "bg-secondary")">
+                                @c.Status
+                            </span>
+                        </div>
+                        <div class="actions">
+                            <a asp-page="Details" asp-route-id="@c.Id" class="btn btn-sm btn-outline-primary">Открыть</a>
+                            <a asp-page="Edit" asp-route-id="@c.Id" class="btn btn-sm btn-outline-secondary">Изменить</a>
+                            <form method="post" asp-page="Delete" asp-route-id="@c.Id" onsubmit="return confirm('Удалить документ?');" class="d-inline" style="display:inline-block; margin-left:6px">
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Удалить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     }
-    </tbody>
-</table>
+    </div>
 
-<nav>
-    <ul class="pagination">
-        @for (int i = 1; i <= Math.Ceiling((double)Model.Paged.TotalCount / Model.Paged.PageSize); i++)
-        {
-            <li class="page-item @(i == Model.Paged.Page ? "active" : "")"><a class="page-link" asp-route-page="@i">@i</a></li>
-        }
-    </ul>
-</nav>
+    @if(Model.Paged.TotalCount > Model.Paged.PageSize)
+    {
+        <nav>
+            <ul class="pagination">
+                @for (int i = 1; i <= Math.Ceiling((double)Model.Paged.TotalCount / Model.Paged.PageSize); i++)
+                {
+                    <li class="page-item @(i == Model.Paged.Page ? "active" : "")">
+                        <a class="page-link" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+}

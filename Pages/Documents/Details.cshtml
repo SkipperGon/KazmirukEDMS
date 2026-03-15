@@ -1,40 +1,134 @@
 @page "{id:guid}"
 @model KazmirukEDMS.Pages.Documents.DetailsModel
 @{
-    ViewData["Title"] = "Document details";
+    ViewData["Title"] = "Данные документа";
 }
 
-<h1>@Model.Document?.Title</h1>
-<p>Registration: @Model.Document?.RegistrationNumber</p>
-<p>Status: @Model.Document?.Status</p>
+<div class="document-details-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem;">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 700; margin: 0; margin-bottom: 0.5rem;">@Model.Document?.Title</h1>
+            <div style="font-size: 1rem; opacity: 0.9;">
+                @if(!string.IsNullOrEmpty(Model.Document?.RegistrationNumber))
+                {
+                    <span>📋 Рег. номер: <strong>@Model.Document.RegistrationNumber</strong></span>
+                }
+            </div>
+            <div style="font-size: 0.95rem; opacity: 0.85; margin-top: 0.5rem;">
+                Статус: <strong>@Model.Document?.Status</strong>
+            </div>
+        </div>
+        <a asp-page="Index" class="btn btn-light" style="border-radius: 8px; padding: 0.5rem 1.5rem; font-weight: 600;">← Вернуться</a>
+    </div>
+</div>
 
-<h3>Versions</h3>
-<table class="table">
-    <thead>
-        <tr>
-            <th>#</th>
-            <th>File</th>
-            <th>Mime</th>
-            <th>Created</th>
-        </tr>
-    </thead>
-            <tbody>
-    @foreach(var v in Model.Versions)
+<div class="versions-section">
+    <div class="section-header">
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+            <span>📄 Версии документа</span>
+            <span class="badge bg-primary" style="border-radius: 20px; font-size: 0.75rem;">@Model.Versions.Count()</span>
+        </h2>
+    </div>
+
+    @if(Model.Versions.Count == 0)
     {
-        <tr>
-            <td>@v.VersionNumber</td>
-            <td><a asp-page="/Files/Download" asp-route-id="@v.Id">@System.IO.Path.GetFileName(v.FilePath)</a></td>
-            <td>@v.MimeType</td>
-            <td>@v.CreatedAt.ToLocalTime()</td>
-        </tr>
+        <div class="alert alert-info d-flex align-items-center" style="border-radius: 8px; border: none; background: #e7f3ff; color: #0056b3;">
+            <span style="font-size: 1.5rem; margin-right: 1rem;">ℹ️</span>
+            <div>Нет загруженных версий. Загрузите первую версию документа.</div>
+        </div>
     }
-    </tbody>
-</table>
+    else
+    {
+        <div class="versions-grid">
+        @foreach(var v in Model.Versions)
+        {
+            <div class="version-card">
+                <div class="version-card-header">
+                    <div class="version-number">
+                        <span class="badge bg-info" style="border-radius: 20px; padding: 0.4rem 0.8rem;">v@v.VersionNumber</span>
+                    </div>
+                    <div class="signature-badge">
+                        @if (v.HasSignature)
+                        {
+                            <span class="badge bg-success" style="border-radius: 20px; padding: 0.4rem 0.8rem;">✓ Подписана</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary" style="border-radius: 20px; padding: 0.4rem 0.8rem;">⭕ Не подписана</span>
+                        }
+                    </div>
+                </div>
 
-<h3>Upload new version</h3>
-<form method="post" enctype="multipart/form-data">
-    <input type="file" name="Upload" />
-    <button class="btn btn-primary" asp-page-handler="Upload">Upload</button>
-</form>
+                <div class="version-card-body">
+                    <div class="file-info">
+                        <img src="@v.IconUrl" alt="icon" class="file-icon" />
+                        <div class="file-details">
+                            <a href="@v.DownloadUrl" class="file-name" title="@v.FileName">@v.FileName</a>
+                            <div class="file-meta">
+                                <span class="meta-item">
+                                    <strong>Тип:</strong> @(string.IsNullOrEmpty(v.MimeType) ? "Неизвестен" : v.MimeType)
+                                </span>
+                                <span class="meta-item">
+                                    <strong>Размер:</strong> @v.SizeText
+                                </span>
+                            </div>
+                            <div class="file-meta">
+                                <span class="meta-item">
+                                    📅 @v.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
+                                </span>
+                                @if(!string.IsNullOrEmpty(v.CreatedById))
+                                {
+                                    <span class="meta-item">
+                                        👤 @v.CreatedById
+                                    </span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<p><a asp-page="Index">Back to list</a></p>
+                <div class="version-card-footer">
+                    <div class="version-checksum">
+                        @if(!string.IsNullOrEmpty(v.Checksum))
+                        {
+                            <small class="text-muted" title="SHA-256">
+                                🔐 @(v.Checksum.Substring(0, Math.Min(16, v.Checksum.Length)))...
+                            </small>
+                        }
+                    </div>
+                    <a href="@v.DownloadUrl" class="btn btn-sm btn-primary" style="border-radius: 6px;">
+                        ⬇️ Скачать
+                    </a>
+                </div>
+            </div>
+        }
+        </div>
+    }
+</div>
+
+<div class="upload-section">
+    <div class="section-header">
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: #1a1a1a; margin: 0; display: flex; align-items: center; gap: 0.75rem;">
+            <span>⬆️ Загрузить новую версию</span>
+        </h2>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="upload-form">
+        <div class="upload-box">
+            <input type="file" name="Upload" class="file-input" id="fileInput" accept="*" />
+            <label for="fileInput" class="file-label">
+                <span class="upload-icon">📁</span>
+                <span class="upload-text">
+                    <strong>Выберите файл</strong> или перетащите сюда
+                </span>
+                <span class="upload-hint">Любой тип файла, максимум 500 МБ</span>
+            </label>
+        </div>
+        <div class="upload-actions">
+            <button type="submit" asp-page-handler="Upload" class="btn btn-primary btn-lg" style="border-radius: 8px; padding: 0.75rem 2rem; font-weight: 600;">
+                📤 Загрузить версию
+            </button>
+        </div>
+    </form>
+</div>
+

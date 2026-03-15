@@ -17,10 +17,7 @@
         <input asp-for="Input.Password" class="form-control" />
         <span asp-validation-for="Input.Password" class="text-danger"></span>
     </div>
-    <div class="mb-3 form-check">
-        <input asp-for="Input.RememberMe" class="form-check-input" />
-        <label asp-for="Input.RememberMe" class="form-check-label">Запомнить меня</label>
-    </div>
+    <!-- Запоминание отключено: сессия завершается при закрытии браузера -->
     <button type="submit" class="btn btn-primary">Войти</button>
 </form>
 

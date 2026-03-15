@@ -32,9 +32,6 @@ namespace KazmirukEDMS.Pages.Account
             [Required]
             [DataType(DataType.Password)]
             public string Password { get; set; } = null!;
-
-            // We do not persist cookie by default; keep option for future
-            public bool RememberMe { get; set; }
         }
 
         public void OnGet(string? returnUrl = null)
@@ -47,7 +44,8 @@ namespace KazmirukEDMS.Pages.Account
             ReturnUrl = returnUrl ?? Url.Content("~/");
             if (!ModelState.IsValid) return Page();
 
-            var result = await _signInManager.PasswordSignInAsync(Input.UserName, Input.Password, isPersistent: Input.RememberMe, lockoutOnFailure: true);
+            // Do not allow persistent login (remember me). Session cookie only.
+            var result = await _signInManager.PasswordSignInAsync(Input.UserName, Input.Password, isPersistent: false, lockoutOnFailure: true);
             if (result.Succeeded)
             {
                 return LocalRedirect(ReturnUrl);

@@ -94,6 +94,16 @@ namespace KazmirukEDMS
 
             app.MapRazorPages();
 
+            // Seed initial data (roles, admin user) from environment variables when missing
+            try
+            {
+                Data.DbInitializer.InitializeAsync(app.Services, app.Logger).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                app.Logger.LogError(ex, "An error occurred during database seeding.");
+            }
+
             app.Run();
         }
     }

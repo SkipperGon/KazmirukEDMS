@@ -141,6 +141,15 @@ namespace KazmirukEDMS.Services
             return Map(v);
         }
 
+        public async Task<Dictionary<Guid, DocumentVersionDto>> GetVersionsByIdsAsync(IEnumerable<Guid> ids)
+        {
+            var idList = ids?.Where(i => i != Guid.Empty).Distinct().ToList() ?? new List<Guid>();
+            if (!idList.Any()) return new Dictionary<Guid, DocumentVersionDto>();
+
+            var list = await _db.DocumentVersions.AsNoTracking().Where(v => idList.Contains(v.Id)).ToListAsync();
+            return list.ToDictionary(v => v.Id, v => Map(v));
+        }
+
         public async Task<IEnumerable<DocumentVersionDto>> GetVersionsAsync(Guid documentId)
         {
             var list = await _db.DocumentVersions.AsNoTracking()

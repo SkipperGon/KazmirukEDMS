@@ -18,6 +18,7 @@ namespace KazmirukEDMS.Services.Interfaces
 
         Task<DocumentVersionDto> AddVersionAsync(Guid documentId, DocumentVersionCreateDto dto, string? createdById = null);
         Task<DocumentVersionDto?> GetVersionAsync(Guid id);
+        Task<Dictionary<Guid, DocumentVersionDto>> GetVersionsByIdsAsync(IEnumerable<Guid> ids);
         Task<IEnumerable<DocumentVersionDto>> GetVersionsAsync(Guid documentId);
         Task<bool> DeleteVersionAsync(Guid id);
     }
